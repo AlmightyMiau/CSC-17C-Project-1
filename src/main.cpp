@@ -11,7 +11,8 @@ using namespace std;
 #include "deck.cpp"
 #include "Dealer.cpp"
 #include "Player.cpp"
-#include "hands.hpp"    // enum for possible hand types 
+#include "hands.hpp"     // enum for possible hand types 
+#include "HashTable.hpp" // Hash Table
 
 //Function Prototypes
 void clearInput();
@@ -23,6 +24,8 @@ void playGame(Deck& deck, list<Player*>& players, Dealer& dealer);
 bool newDeckMenu(Deck& deck);
 // Play a round of poker
 void playRound(list<Player*>& players, Dealer& dealer);
+// Demonstrate hash table (of cards)
+void hashDemo(Deck& deck);
 
 int main() {
     // Seed rand
@@ -57,28 +60,31 @@ int main() {
         cout << "\n==== Welcome ====\n";
         cout << "1. Play as guest\n";
         cout << "2. Get player chips\n";
-        // cout << "3. Display Hash Table of cards\n";
+        cout << "3. Display Hash Table of cards\n";
         // cout << "4. Display Tree of cards\n";
         // cout << "5. Display Graph of hands\n";
-        cout << "3. Exit\n";
+        cout << "6. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
         clearInput();
 
         switch (choice) {
-        case 1:
-            playGame(deck, players, dealer);
-            break;
-        case 2:
-            for (auto player : players) player->displayChips();
-            break;
-        case 3:
-            cout << "Goodbye!\n";
-            break;
-        default:
-            cout << "Invalid choice. Please try again.\n";
+            case 1:
+                playGame(deck, players, dealer);
+                break;
+            case 2:
+                for (auto player : players) player->displayChips();
+                break;
+            case 3:
+                hashDemo(deck);
+                break;
+            case 6:
+                cout << "Goodbye!\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 3);
+    } while (choice != 6);
 
 
     // clean up
@@ -281,4 +287,31 @@ void playRound(list<Player*>& players, Dealer& dealer) {
 void clearInput() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+void hashDemo(Deck& deck) {
+    // First show what we're putting in
+    deck.shuffle();
+    deck.print();
+
+    // Create hash table
+    HashTable table(13);
+
+    Deck temp(deck);
+    // Move of the cards in the deck to the hash table
+    for (int i = 0; i < deck.getSize(); i++)
+        table.insert(temp.dealCard());
+
+    // Display the hash table
+    table.print();
+
+    // Query it for cards and report how many cards it had to look through first
+    deck.shuffle();
+    cout << "How many other cards are seen before finding a card?" << endl;
+    for (int i = 0; i < 8; i++) {
+        int card = deck.dealCard();
+        cout << Deck::face(card) << Deck::suit(card) << " : " << table.hits(card) << endl;
+    }
+
+    return;
 }
