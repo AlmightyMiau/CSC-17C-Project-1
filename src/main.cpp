@@ -329,7 +329,7 @@ void hashDemo(Deck& deck) {
         cout << Deck::face(card) << Deck::suit(card) << " : " << table.hits(card) << endl;
     }
     
-    cout << "\n| Ending AVL Tree demonstration |\n";
+    cout << "\n| Ending Hash Table demonstration |\n";
 }
 
 void treeDemo(Deck& deck) {
