@@ -5,7 +5,7 @@
 using namespace std;
 
 // Constructor: link this dealer to the shared Deck
-Dealer::Dealer(Deck* d,int id) : Player(d,id) {}
+Dealer::Dealer(Deck* d,string id) : Player(d,id,0) {}
 
 // Dealer draws cards while hand value is below 17
 // void Dealer::takeTurn() {

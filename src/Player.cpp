@@ -6,9 +6,10 @@
 using namespace std;
 
 // Constructor: link this dealer to the shared Deck
-Player::Player(Deck* d, int id) {
+Player::Player(Deck* d, string id, int c) {
     deck = d;
     ID = id;
+    chips = c;
     reset(); // Clear any existing hand
 }
 
@@ -158,4 +159,8 @@ void Player::showHand() const {
 
 int Player::getNumCards() const {
     return numCards;
+}
+
+void Player::displayChips() {
+    cout << "Player " << ID << " has " << chips << " chips" << endl;
 }

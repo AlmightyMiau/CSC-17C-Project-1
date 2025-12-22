@@ -17,9 +17,12 @@ using namespace std;
 void clearInput();
 
 // Game Logic
-
-int firstEmpty(const int* hand, int num);
-int playBlackJack();
+// Menu before/between rounds to look at the deck
+void playGame(Deck& deck, list<Player*>& players, Dealer& dealer);
+// Choose how to make a new deck
+bool newDeckMenu(Deck& deck);
+// Play a round of poker
+void playRound(list<Player*>& players, Dealer& dealer);
 
 int main() {
     // Seed rand
@@ -28,10 +31,158 @@ int main() {
     Deck deck;              // Deck of cards
     list<Player*> players;  // Player's hand
     int numPlayers = 3;     // Number of people playing poker (not including a dealer)
-    for (int i = 0; i < numPlayers; i++) players.push_back(new Player(&deck, i));
-    Dealer dealer(&deck, -1);   // Cards in center
+    for (int i = 0; i < numPlayers; i++) {
+        string playerName;
+        cout << "Enter player " << i << "'s name: " << endl;
+        cin >> playerName;
+        players.push_back(new Player(&deck, playerName, 100));
+    }
+    Dealer dealer(&deck, string("dealer"));   // Cards in center
 
-    // cout << "Deck:   "; deck.print();
+    // now we can see what hand the player has and can compare to olther players
+    // BUT need more cards dealt to dealer
+
+    // deal player their cards
+    // find any valid hands
+    // deal first three dealer cards
+    // find any valid hands
+    // deal dealer card
+    // find any valid hands
+    // deal last dealer card
+    // find any valid hands
+    // this is what the player wins/loses with
+
+    int choice;
+    do {
+        cout << "\n==== Welcome ====\n";
+        cout << "1. Play as guest\n";
+        cout << "2. Get player chips\n";
+        // cout << "3. Display Hash Table of cards\n";
+        // cout << "4. Display Tree of cards\n";
+        // cout << "5. Display Graph of hands\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        clearInput();
+
+        switch (choice) {
+        case 1:
+            playGame(deck, players, dealer);
+            break;
+        case 2:
+            for (auto player : players) player->displayChips();
+            break;
+        case 3:
+            cout << "Goodbye!\n";
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 3);
+
+
+    // clean up
+    for (auto player : players) delete player;
+    // for (int i = 0; i < numPlayers; i++) delete playerScores[i];
+    return 0;
+}
+
+void playGame(Deck& deck, list<Player*>& players, Dealer& dealer) {
+    // choices
+    int choice = 0;
+    do {
+        cout << "\n==== Playing Poker ====\n";
+        cout << "1. Play Round\n";
+        cout << "2. Display Deck (" << deck.getSize() << " cards)\n";
+        cout << "3. Shuffle Deck\n";
+        cout << "4. Sort Deck\n";
+        cout << "5. Stop Playing\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        clearInput();
+
+        bool ready = true;
+        switch (choice) {
+            case 1: // Play round (with current deck)
+                // Ensure deck has enough cards to play
+                if (deck.getSize() < 2*players.size() + 3)
+                    ready = newDeckMenu(deck);
+                if (ready)
+                    playRound(players, dealer);
+                break;
+            case 2: // Display the deck
+                cout << "Displaying deck" << endl;
+                deck.print();
+                break;
+            case 3: // Shuffle the deck
+                cout << "Suffling deck" << endl;
+                deck.shuffle();
+                cout << "Deck shuffled" << endl;
+                break;
+            case 4: // Sort the deck
+                cout << "Sorting deck" << endl;
+                deck.sort();
+                cout << "Deck sorted" << endl;
+                break;
+            case 5: // Exit 
+                cout << "Goodbye!\n";
+                break;
+            default: 
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 5);
+    // stop playing
+    return;
+}
+
+// We need to refill the deck, choose how
+bool newDeckMenu(Deck& deck) {
+    int choice = 0;
+    cout << "\nThere weren't enough cards to play this round,";
+    do {
+        cout << "\nHow would you like to reset deck?\n";
+        cout << "1. Don't Play Round\n";
+        cout << "2. Display Deck (" << deck.getSize() << " cards)\n";
+        cout << "3. Shuffle New Deck\n";
+        cout << "4. Sort Deck\n";
+        cout << "5. Continue Forth\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        clearInput();
+
+        switch (choice) {
+            case 1: // Don't play
+                cout << "Not playing round" << endl;
+                return false;
+            case 2: // Display the deck
+                cout << "Displaying deck" << endl;
+                deck.print();
+                break;
+            case 3: // Shuffle the deck
+                cout << "Suffling deck" << endl;
+                deck.shuffle();
+                cout << "Deck shuffled" << endl;
+                break;
+            case 4: // Sort the deck
+                cout << "Sorting deck" << endl;
+                deck.sort();
+                cout << "Deck sorted" << endl;
+                break; 
+            case 5: // Continue forth
+                if (deck.getSize() == deck.NUMCARDS)
+                    return true;
+                else {
+                    cout << "There are not enough cards yet" << endl;
+                    break;
+                }
+            default: 
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 1 && choice != 5);
+    return false;
+}
+
+void playRound(list<Player*>& players, Dealer& dealer) {
     for (Player* player : players) {
         player->hit(2);
     }
@@ -119,46 +270,11 @@ int main() {
     }
     cout << "Player " << winner->ID << " is the winner !" << endl;
 
-
-    // now we can see what hand the player has and can compare to olther players
-    // BUT need more cards dealt to dealer
-
-    // deal player their cards
-    // find any valid hands
-    // deal first three dealer cards
-    // find any valid hands
-    // deal dealer card
-    // find any valid hands
-    // deal last dealer card
-    // find any valid hands
-    // this is what the player wins/loses with
-
-    // int choice;
-    // do {
-    //     cout << "\n==== Welcome ====\n";
-    //     cout << "1. Play as guest\n";
-    //     cout << "2. Exit\n";
-    //     cout << "Enter your choice: ";
-    //     cin >> choice;
-    //     clearInput();
-
-    //     switch (choice) {
-    //     case 1:
-    //         playBlackJack();
-    //         break;
-    //     case 2:
-    //         cout << "Goodbye!\n";
-    //         break;
-    //     default:
-    //         cout << "Invalid choice. Please try again.\n";
-    //     }
-    // } while (choice != 2);
-
-
-    // clean up
-    for (auto player : players) delete player;
-    // for (int i = 0; i < numPlayers; i++) delete playerScores[i];
-    return 0;
+    // Clear hands
+    for (Player* player : players) {
+        player->reset();
+    }
+    dealer.reset();
 }
 
 // Calls cin.clear() and cin.ignore()
@@ -166,102 +282,3 @@ void clearInput() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
-
-// Find the first empty slot of a given hand
-int firstEmpty(const int* hand, int num) {
-    // Check every slot
-    for (int i = 0; i < num; i++) {
-        // If slot is empty (-1 means empty) return the slot number
-        if (hand[i] == -1) {
-            return i;
-        }
-    }
-    return 0;
-}
-
-// Play a round of Blackjack and return the results
-// 0 is loss, 1 is tie, 2 is win
-// int playBlackJack() {
-//     //Declare Variables
-//     Deck deck;              // Deck of cards
-//     Dealer dealer(&deck);   // Dealer object connected to deck
-//     Player player(&deck);   // Player object connected to deck
-//     int dealerTotal = 0;    // Total value of dealer's cards
-//     int playerTotal = 0;    // Total value of player's cards
-
-//     // Deal initial hands
-//     dealer.dealInitial();
-//     player.dealInitial();
-
-//     // Show dealer's hand (one card hidden)
-//     dealer.showHand(false);
-
-//     // Display player's cards
-//     player.showHand();
-
-//     char choice;
-//     // Player makes their move: hit or stand
-//     cout << "Hit? (y/n): ";
-//     cin >> choice;
-
-//     // Process player input
-//     while (choice == 'y') {
-//         // Assign random card id to the first empty slot in playerCards' hand
-//         player.hit();
-
-//         // Display player's cards
-//         player.showHand();
-
-//         // Check for bust
-//         if (player.isBust()) {
-//             cout << "You went bust!\nYou lost :[" << endl;
-//             return 0;
-//         }
-
-//         // Player makes their move: hit or stand
-//         cout << "Hit? (y/n): ";
-//         cin >> choice;
-//     }
-
-//     // Dealer hits while hand value less than 17
-//     dealer.takeTurn(); 
-
-//     // Check for dealer bust
-//     if (dealer.isBust()) {
-//         dealer.showHand(true);
-//         cout << "Dealer went bust!\nYou won!" << endl;
-//         return 1;
-//     }
-
-//     // output hand total and card faces + suits
-//     dealer.showHand(true); // Reveal dealer's full hand
-//     player.showHand();
-
-//     // Get hand totals
-//     dealerTotal = dealer.getTotal();
-//     playerTotal = player.getTotal();
-
-//     // Select winner based on highest hand value
-//     if (playerTotal > dealerTotal) {
-//         cout << "You won!" << endl;
-//         return 1;
-//     } else if (dealerTotal > playerTotal) {
-//         cout << "You lost :[" << endl;
-//         return 0;
-//     } else { // Equal hand values; Compare hand sizes
-//         int playerCount = player.getNumCards();
-//         int dealerCount = dealer.getNumCards();
-
-//         // Figure out whose is smaller and award winner
-//         if (dealerCount > playerCount) { // Dealer has more cards than player; Player wins
-//             cout << "You won by least cards!" << endl;
-//             return 1;
-//         } else if (playerCount > dealerCount) { // Player has more cards than dealer; Player loses
-//             cout << "You lost by least cards :[" << endl;
-//             return 0;
-//         } else { // Equal card counts
-//             cout << "It's a draw :/" << endl;
-//             return 2;
-//         }
-//     }
-// }
