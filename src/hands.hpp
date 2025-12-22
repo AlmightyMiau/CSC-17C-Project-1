@@ -1,8 +1,6 @@
 #ifndef HANDS_HPP
 #define HANDS_HPP
 
-#include <string>
-
 enum HANDS {
     StraightFlush,
     FourOfAKind,
@@ -11,7 +9,7 @@ enum HANDS {
     Straight,
     ThreeOfAKind,
     TwoPair,
-    Pair,
+    OnePair,
     HighCard
 };
 

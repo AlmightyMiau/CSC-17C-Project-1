@@ -14,6 +14,8 @@ using namespace std;
 #include "hands.hpp"     // enum for possible hand types 
 #include "HashTable.hpp" // Hash Table
 #include "tree.h"        // AVL Tree
+#include "EdgeWeightedAdjacencyListGraph.h"
+#include "MinimumSpanningTree.h"
 
 //Function Prototypes
 void clearInput();
@@ -29,6 +31,8 @@ void playRound(list<Player*>& players, Dealer& dealer);
 void hashDemo(Deck& deck);
 // Demonstrate AVL Tree
 void treeDemo(Deck& deck);
+// Demonstrate Graph
+void graphDemo();
 
 int main() {
     // Seed rand
@@ -65,7 +69,7 @@ int main() {
         cout << "2. Get player chips\n";
         cout << "3. Display Hash Table of cards\n";
         cout << "4. Display Tree of cards\n";
-        // cout << "5. Display Graph of hands\n";
+        cout << "5. Display Graph of hands\n";
         cout << "6. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
@@ -83,6 +87,9 @@ int main() {
                 break;
             case 4:
                 treeDemo(deck);
+                break;
+            case 5:
+                graphDemo();
                 break;
             case 6:
                 cout << "Goodbye!\n";
@@ -378,4 +385,72 @@ void treeDemo(Deck& deck) {
                 cout << "Invalid choice. Please try again.\n";
         }
     } while(choice != 5);
+}
+
+void graphDemo() {
+    cout << "\n===== Graph Demonstration =====\n";
+    cout << "   Using types of poker hands\n" << endl;
+    // Graph
+    /*
+        High Card -- One Pair
+        High Card -- Straight
+        High Card -- Flush
+        High Card -- Straight Flush
+        One Pair -- Two Pair
+        One Pair -- Three of a Kind
+        One Pair -- Straight
+        One Pair -- Flush
+        One Pair -- Straight Flush
+        Two Pair -- Full House
+        Three of a Kind -- Full House
+        Three of a Kind -- Four of a Kind
+        Full House -- Four of a Kind
+        Straight -- Flush
+        Straight -- Straight Flush
+        Flush -- Straight Flush
+    */
+   cout << "Key for hands:" << endl;
+   cout << "0 : Straight Flush" << endl;
+   cout << "1 : Four of a Kind" << endl;
+   cout << "2 : Full House" << endl;
+   cout << "3 : Flush" << endl;
+   cout << "4 : Straight" << endl;
+   cout << "5 : Three of a Kind" << endl;
+   cout << "6 : Two Pair" << endl;
+   cout << "7 : One Pair" << endl;
+   cout << "8 : High Card\n" << endl;
+
+    // Construct the graph
+    EdgeWeightedAdjacencyListGraph graph(9);
+    // Adapting a weighted graph to an unweighted one by only using weights of one
+    graph.addEdge(Edge(HighCard, OnePair, 1)); 
+    graph.addEdge(Edge(HighCard, Straight, 1)); 
+    graph.addEdge(Edge(HighCard, Flush, 1)); 
+    graph.addEdge(Edge(HighCard, StraightFlush, 1));
+    graph.addEdge(Edge(OnePair, TwoPair, 1)); 
+    graph.addEdge(Edge(OnePair, ThreeOfAKind, 1));
+    graph.addEdge(Edge(OnePair, Straight, 1)); 
+    graph.addEdge(Edge(OnePair, Flush, 1)); 
+    graph.addEdge(Edge(OnePair, StraightFlush, 1));
+    graph.addEdge(Edge(TwoPair, FullHouse, 1));
+    graph.addEdge(Edge(ThreeOfAKind, FullHouse, 1));
+    graph.addEdge(Edge(ThreeOfAKind, FourOfAKind, 1));
+    graph.addEdge(Edge(FullHouse, FourOfAKind, 1));
+    graph.addEdge(Edge(Straight, Flush, 1));
+    graph.addEdge(Edge(Straight, StraightFlush, 1));
+    graph.addEdge(Edge(Flush, StraightFlush, 1));
+
+    // display graph
+    cout << graph;
+
+    // Distances between hands
+    cout << "\nMinimum Spanning Tree:\n";
+    MinimumSpanningTree mst{graph};
+    for (const auto& edge : mst.edges()) {
+        cout << edge << "\n";
+    }
+    cout << "Weight: " << mst.weight() << "\n";
+
+    cout <<   "|     Ending Graph Demonstration       |\n";
+    cout << "\n----- See Image of Graph in Folder -----n";
 }

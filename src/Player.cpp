@@ -6,10 +6,10 @@
 using namespace std;
 
 // Constructor: link this dealer to the shared Deck
-Player::Player(Deck* d, string id, int c) {
+Player::Player(Deck* d, string id, int chips) {
     deck = d;
     ID = id;
-    chips = c;
+    this->chips = chips;
     reset(); // Clear any existing hand
 }
 
@@ -87,8 +87,8 @@ map<HANDS,int>* Player::calcHandScore(list<int> center) {
             break;
         case 4: // 11234
             for (auto& pair : face) {
-                if (pair.second == 2) { // Pair
-                    total[0][Pair] = pair.first;
+                if (pair.second == 2) { // OnePair
+                    total[0][OnePair] = pair.first;
                     break;
                 }
             }
