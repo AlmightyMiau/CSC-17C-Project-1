@@ -131,6 +131,10 @@ char Deck::suit(int n) {
     return suits[n / 13];
 }
 
+string Deck::str(int n) {
+    return string{face(n), suit(n)};
+}
+
 // Return a random, unused card and mark it as used
 int Deck::dealCard() {
     int card = deck.front();
